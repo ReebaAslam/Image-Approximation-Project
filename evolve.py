@@ -11,6 +11,8 @@ RED=(255,0,0)
 GREEN=(0,255,0)
 BLUE=(0,0,255)
 
+MUTATE_CHANCE = 0.5
+
 #A chromosome object is the basic unit of the population made up of genes
 class Chromosome():
     def __init__(self,color=BLACK,pos=(0,0),alpha=255,rad=0):
@@ -22,7 +24,24 @@ class Chromosome():
     def __str__(self):
         lst=[self.RGBA,self.pos,self,rad]
         return lst.__str__()
-
+    
+    def gene_mutate(self,size):
+#        mutate = False
+#        if MUTATE_CHANCE >= np.random.random():
+#            mutate = True
+#        if mutate:
+        prop = np.random.randint(0,3)
+        if prop == 0:
+            # mutate color
+            pass
+        elif prop == 1:
+            # mutate position
+            x = random.randint(size[0],size[1])
+            y = random.randint(size[0],size[1])
+            self.pos = (x,y)
+        else:
+            # mutate radius
+            pass
 
 class Population():
     def __init__(self, pop, parent,fitVal):
@@ -158,7 +177,23 @@ class Evolve():
             3- re-add them in self.offsprings using addFitter()
             """
         
-        pass
+        for p in self.offsprings:
+            # each offspring has a random choice of mutating
+            if MUTATE_CHANCE >= np.random.random():
+                p.gene_mutate(self.size)
+        children=self.offsprings[:]
+        self.offsprings=[]
+        for pop in children:
+            if self.Screen.DrawPop(pop,self.genCount+1):
+                fitVal=self.fitness()
+                if fitVal==-1:
+                    raise ValueError("No final image exists!")
+                else:
+                    tempPop=Population(pop,fitVal)
+                    self.addFitter(self.offsprings,tempPop)
+            else:
+                raise ValueError("Population not drawn!")
+
     
     def evolve(self):
         pass
