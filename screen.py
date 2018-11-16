@@ -9,15 +9,18 @@ BLUE=(0,0,255)
 
 class Screen():
     def __init__(self, size):
-        pygame.display.init()
         self.size=size
         self.screen=None
+        self.surface=None
+        
+    def setSurface(self):
         #surface for transparency
         self.surface=pygame.Surface(self.size,pygame.SRCALPHA)
         
     def setScreen(self):
         #initializing display
         pygame.display.init()
+        self.setSurface()
         if pygame.display.get_init():
             #setting up the screen
             self.screen=pygame.display.set_mode(list(self.size))
