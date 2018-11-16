@@ -137,9 +137,9 @@ class Evolve():
         self.pops=selectPop
         self.offsprings=[]
 
-    def select(self):
-        """ single parent vs daughter"""
-        self.pops.pop()     #removes the less fitter population
+    #def select(self):
+    #    """ single parent vs daughter"""
+    #    self.pops.pop()     #removes the less fitter population
     
     def crossover(self,r):
         """ creates new offsprings using crossover at point r"""
