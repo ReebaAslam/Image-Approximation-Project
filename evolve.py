@@ -44,7 +44,7 @@ class Evolve():
         width,height= self.img.size
         self.size=(width,height)
         #pygame screen 
-        self.screen=Screen(self.size)
+        self.Screen=Screen(self.size)
         #the generation count
         self.genCount=0
         #population of the current generation, would be a list of chromosomes
@@ -70,11 +70,11 @@ class Evolve():
     def generatePopulation(self):
         """generates random population"""
         
-        if not (pygame.display.get_init()) or len(self.pops)>=2 :   #function should not work if there is no screen
+        if len(self.pops)>=2 :   #function should not work if there is no screen
             return False
         #computing radius for the circles
         ScreenArea=self.size[0]*self.size[1]
-        CircleArea=ScreenArea/n
+        CircleArea=ScreenArea/self.nCircle
         radius=int(np.sqrt(CircleArea/np.pi))
         #flags for colors
         black,white=0,1
@@ -94,6 +94,7 @@ class Evolve():
             #creating a new chromosome
             newChromo=Chromosome(rgb,(posX,posY),alpha,radius)
             pop.append(newChromo)
+        self.Screen.setScreen()
         if self.Screen.DrawPop(pop,self.genCount):
             fitVal=self.fitness()
             if fitVal==-1:
@@ -164,9 +165,8 @@ class Evolve():
     
 
 
-##test=Evolve('test.jpg')
-##test.setScreen()
-##test.generatePopulation(100)
+test=Evolve('test.jpg',100)
+test.generatePopulation()
 ##test.DrawPop()
 ##fitVal=test.fitness()
 ##print(fitVal)

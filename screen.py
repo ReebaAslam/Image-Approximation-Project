@@ -1,5 +1,11 @@
 import pygame
 
+#some standard colors     
+WHITE=(255,255,255)
+BLACK=(0,0,0)
+RED=(255,0,0)
+GREEN=(0,255,0)
+BLUE=(0,0,255)
 
 class Screen():
     def __init__(self, size):
@@ -20,13 +26,13 @@ class Screen():
             pygame.display.update() #updating screen
 
     def DrawPop(self, pop, gen):
-        if not pygame.display.init():
-            return False
+##        if not pygame.display.init():
+##            return False
         #Loop until the user clicks the close button.
         done = False
 ##        clock = pygame.time.Clock()
         i=0
-        while i<len(pop):
+        while not done:
      
             # This limits the while loop to a max of 10 times per second.
             # Leave this out and we will use all CPU we can.
@@ -44,8 +50,8 @@ class Screen():
                 pygame.display.update()
             i+=1
         #image is saved only when all of the population has been drawn       
-##        if i>=len(pop):
-        imgName="gen#"+str(gen)+".jpg"
-        pygame.image.save(self.screen, imgName)
+        if i>=len(pop):
+            imgName="gen#"+str(gen)+".jpg"
+            pygame.image.save(self.screen, imgName)
         pygame.display.quit()
         return True
