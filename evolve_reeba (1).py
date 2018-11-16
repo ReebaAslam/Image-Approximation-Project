@@ -26,22 +26,22 @@ class Chromosome():
         return lst.__str__()
 
     def gene_mutate(self,size):
-#        mutate = False
-#        if MUTATE_CHANCE >= np.random.random():
-#            mutate = True
-#        if mutate:
-        prop = np.random.randint(0,3)
-        if prop == 0:
-            # mutate color
-            pass
-        elif prop == 1:
-            # mutate position
-            x = random.randint(size[0],size[1])
-            y = random.randint(size[0],size[1])
-            self.pos = (x,y)
-        else:
-            # mutate radius
-            pass
+        mutate = False
+        if MUTATE_CHANCE >= np.random.random():
+            mutate = True
+        if mutate:
+            prop = np.random.randint(0,3)
+            if prop == 0:
+                # mutate color
+                pass
+            elif prop == 1:
+                # mutate position
+                x = int(np.random.randint(0,size[0])/2)
+                y = int(np.random.randint(0,size[1])/2)
+                self.pos = (x,y)
+            else:
+                # mutate radius
+                pass
 
 class Population():
     def __init__(self, pop,fitVal):
@@ -167,8 +167,6 @@ class Evolve():
         """ creates new offsprings using crossover at point r"""
 
         crossover_point=min(self.nCircle-1,int((self.nCircle)/r))
-        print(crossover_point)
-        print(len(self.pops[1].pop))
         #crossover_point=(self.nCircle)/r
         child1=self.pops[0].pop[:crossover_point]+self.pops[1].pop[crossover_point:]
         child2=self.pops[1].pop[:crossover_point]+self.pops[0].pop[crossover_point:]
@@ -188,7 +186,8 @@ class Evolve():
         for p in self.offsprings:
             # each offspring has a random choice of mutating
             if MUTATE_CHANCE >= np.random.random():
-                p.gene_mutate(self.size)
+                for g in p:
+                    g.gene_mutate(self.size)
         children=self.offsprings[:]
         self.offsprings=[]
         for pop in children:
