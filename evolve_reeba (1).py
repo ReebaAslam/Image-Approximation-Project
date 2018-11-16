@@ -151,12 +151,12 @@ class Evolve():
         selectedPop=[]
         while len(selectedPop)<2:
             if self.pops[i].fitVal>self.offsprings[j].fitVal:
-                addFitter(selectedPop,self.pops[i])
+                self.addFitter(selectedPop,self.pops[i])
                 i+=1
             else:
-                addFitter(selectedPop,self.offsprings[j])
+                self.addFitter(selectedPop,self.offsprings[j])
                 j+=1
-        self.pops=selectPop
+        self.pops=selectedPop
         self.offsprings=[]
 
 #    def select(self):
