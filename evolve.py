@@ -24,34 +24,33 @@ class Chromosome():
     def __str__(self):
         lst=[self.RGBA,self.pos,self,rad]
         return lst.__str__()
-    
+
     def gene_mutate(self,size):
-#        mutate = False
-#        if MUTATE_CHANCE >= np.random.random():
-#            mutate = True
-#        if mutate:
-        prop = np.random.randint(0,3)
-        if prop == 0:
-            # mutate color
-            pass
-        elif prop == 1:
-            # mutate position
-            x = random.randint(size[0],size[1])
-            y = random.randint(size[0],size[1])
-            self.pos = (x,y)
-        else:
-            # mutate radius
-            pass
+        mutate = False
+        if MUTATE_CHANCE >= np.random.random():
+            mutate = True
+        if mutate:
+            prop = np.random.randint(0,3)
+            if prop == 0:
+                # mutate color
+                pass
+            elif prop == 1:
+                # mutate position
+                x = int(np.random.randint(0,size[0])/2)
+                y = int(np.random.randint(0,size[1])/2)
+                self.pos = (x,y)
+            else:
+                # mutate radius
+                pass
 
 class Population():
-    def __init__(self, pop, parent,fitVal):
+    def __init__(self, pop,fitVal):
         self.pop=pop
         self.fitVal=fitVal
         
     def __str__(self):
         lst=[self.pop,self.gen,self.fitVal]
-        return lst.__str__()
-    
+        return lst.__str__()  
         
     
 class Evolve():
@@ -75,13 +74,15 @@ class Evolve():
         #offsprings
         self.offsprings=[]
 
+        self.fit=[]
+
     def addFitter(self,lst,p):
         """ makes sure that the fitter population is always at 0th index
             arguments:
                     1- lst: the list which needs to be operated on
                     2- p: the object that needs to be added
         """
-        if len(lst)<1 or lst[0].fitVal>p.fitVal:
+        if len(lst)<1 or lst[0].fitVal<p.fitVal:
             lst.append(p)
         else:
             lst.insert(0,p)
@@ -98,38 +99,43 @@ class Evolve():
         #flags for colors
         black,white=0,1
 
-        pop=[]
-        for i in range(self.nCircle):
-            #randomly choosing color for each circle/chromosome
-            color=random.randint(black,white)
-            #default color is black
-            rgb=BLACK
-            if color==white:
-                rgb=WHITE
-            #random selection of genes
-            alpha=random.randint(0,255)
-            posX=random.randint(0,self.size[0])
-            posY=random.randint(0,self.size[1])
-            #creating a new chromosome
-            newChromo=Chromosome(rgb,(posX,posY),alpha,radius)
-            pop.append(newChromo)
-        self.Screen.setScreen()
-        if self.Screen.DrawPop(pop,self.genCount):
-            fitVal=self.fitness()
-            if fitVal==-1:
-                raise ValueError("No final image exists!")
+        population=[]
+        for k in range(2):
+            p=[]
+            for i in range(self.nCircle):
+                #randomly choosing color for each circle/chromosome
+                color=random.randint(black,white)
+                #default color is black
+                rgb=BLACK
+                if color==white:
+                    rgb=WHITE
+                #random selection of genes
+                alpha=random.randint(0,255)
+                posX=random.randint(0,self.size[0])
+                posY=random.randint(0,self.size[1])
+                #creating a new chromosome
+                newChromo=Chromosome(rgb,(posX,posY),alpha,radius)
+                p.append(newChromo)
+            population.append(p)
+        for pop in population:
+            self.Screen.setScreen()
+            if self.Screen.DrawPop(pop,self.genCount):
+                fitVal=self.fitness()
+                if fitVal==-1:
+                    raise ValueError("No final image exists!")
+                else:
+                    tempPop=Population(pop,fitVal)
+                    self.addFitter(self.pops,tempPop)
             else:
-                tempPop=Population(pop,fitVal)
-                self.addFitter(self.pops,tempPop)
-        else:
-            raise ValueError("Population not drawn!")
+                raise ValueError("Population not drawn!")
+        self.fit=(self.pops[0].fitVal,self.pops[1].fitVal)
         return True
 
     def fitness(self):
         """calculates fitness of a population"""
         
         im1=self.img
-        im2=Image.open("gen" +str(self.genCount)+".jpg")
+        im2=Image.open("gen#" +str(self.genCount)+".jpg")
 ##        im2=self.genImg
         #if any of the images do not exis, the function doesn't work
         if im1==None or im2==None:
@@ -147,25 +153,32 @@ class Evolve():
         i=j=0
         selectedPop=[]
         while len(selectedPop)<2:
-            if self.pops[i].fitVal>self.offsprings[j].fitVal:
-                addFitter(selectedPop,self.pops[i])
+            if self.pops[i].fitVal<self.offsprings[j].fitVal:
+                self.addFitter(selectedPop,self.pops[i])
                 i+=1
             else:
-                addFitter(selectedPop,self.offsprings[j])
+                self.addFitter(selectedPop,self.offsprings[j])
                 j+=1
-        self.pops=selectPop
+        self.pops=selectedPop
         self.offsprings=[]
+        self.fit=(self.pops[0].fitVal,self.pops[1].fitVal)
+        self.Screen.setScreen()
+        self.Screen.DrawPop(self.pops[0].pop,self.genCount+1)
 
-    #def select(self):
-    #    """ single parent vs daughter"""
-    #    self.pops.pop()     #removes the less fitter population
+
+#    def select(self):
+#        """ single parent vs daughter"""
+#        self.pops.pop()     #removes the less fitter population
     
     def crossover(self,r):
         """ creates new offsprings using crossover at point r"""
-        
-        crossover_point=(self.nCircle)/r
-        child1=self.pops[0][:crossover_point]+self.pops[1][crossover_point:]
-        child2=self.pops[1][:crossover_point]+self.pops[0][crossover_point:]
+
+        crossover_point=min(self.nCircle-1,int((self.nCircle)/r))
+        #crossover_point=(self.nCircle)/r
+        child1=self.pops[0].pop[:crossover_point]+self.pops[1].pop[crossover_point:]
+        child2=self.pops[1].pop[:crossover_point]+self.pops[0].pop[crossover_point:]
+        #child1=self.pops[0][:crossover_point]+self.pops[1][crossover_point:]
+        #child2=self.pops[1][:crossover_point]+self.pops[0][crossover_point:]
         self.offsprings=[child1,child2]
 
 
@@ -180,10 +193,12 @@ class Evolve():
         for p in self.offsprings:
             # each offspring has a random choice of mutating
             if MUTATE_CHANCE >= np.random.random():
-                p.gene_mutate(self.size)
+                for g in p:
+                    g.gene_mutate(self.size)
         children=self.offsprings[:]
         self.offsprings=[]
         for pop in children:
+            self.Screen.setScreen()
             if self.Screen.DrawPop(pop,self.genCount+1):
                 fitVal=self.fitness()
                 if fitVal==-1:
@@ -193,15 +208,19 @@ class Evolve():
                     self.addFitter(self.offsprings,tempPop)
             else:
                 raise ValueError("Population not drawn!")
-
     
     def evolve(self):
-        pass
-    
+        while self.genCount<10:
+            self.crossover(np.random.randint(1,max(2,len(self.pops))))
+            self.mutate()
+            self.select()
+            self.genCount += 1
+            print('gen #: ' + str(self.genCount) + 'fitness: ' +str(self.fit))
 
 
 test=Evolve('test.jpg',100)
 test.generatePopulation()
+test.evolve()
 ##test.DrawPop()
 ##fitVal=test.fitness()
 ##print(fitVal)

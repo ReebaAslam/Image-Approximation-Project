@@ -35,7 +35,7 @@ class Screen():
         done = False
 ##        clock = pygame.time.Clock()
         i=0
-        while not done:
+        while i<len(pop):
      
             # This limits the while loop to a max of 10 times per second.
             # Leave this out and we will use all CPU we can.
@@ -47,11 +47,12 @@ class Screen():
             if i<len(pop):
                 chromo=pop[i]
                 pygame.draw.circle(self.surface,chromo.RGBA,chromo.pos,chromo.rad,0)
-            elif i==len(pop):
-                #screen is updated once all the population has been drawn on the surface
-                self.screen.blit(self.surface,(0,0))
-                pygame.display.update()
             i+=1
+            #elif i==len(pop):
+                #screen is updated once all the population has been drawn on the surface
+        self.screen.blit(self.surface,(0,0))
+        pygame.display.update()
+            
         #image is saved only when all of the population has been drawn       
         if i>=len(pop):
             imgName="gen#"+str(gen)+".jpg"
