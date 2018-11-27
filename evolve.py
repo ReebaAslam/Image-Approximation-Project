@@ -92,11 +92,11 @@ class Evolve():
         
         if len(self.pops)>=2 :   #function should not work if there is no screen
             return False
-        #computing radius for the circles
-        ScreenArea=self.size[0]*self.size[1]
-        CircleArea=ScreenArea/self.nCircle
-        radius=int(np.sqrt(CircleArea/np.pi))
-        #flags for colors
+##        #computing radius for the circles
+##        ScreenArea=self.size[0]*self.size[1]
+##        CircleArea=ScreenArea/self.nCircle
+##        radius=int(np.sqrt(CircleArea/np.pi))
+##        #flags for colors
         black,white=0,1
 
         population=[]
@@ -109,10 +109,11 @@ class Evolve():
                 rgb=BLACK
                 if color==white:
                     rgb=WHITE
-                #random selection of genes
+                #random selection of genes 
                 alpha=random.randint(0,255)
                 posX=random.randint(0,self.size[0])
                 posY=random.randint(0,self.size[1])
+                radius= random.randint(0,self.size[0]//8)
                 #creating a new chromosome
                 newChromo=Chromosome(rgb,(posX,posY),alpha,radius)
                 p.append(newChromo)
@@ -163,7 +164,8 @@ class Evolve():
         self.offsprings=[]
         self.fit=(self.pops[0].fitVal,self.pops[1].fitVal)
         self.Screen.setScreen()
-        self.Screen.DrawPop(self.pops[0].pop,self.genCount+1)
+        if self.genCount%10==0:
+            self.Screen.DrawPop(self.pops[0].pop,self.genCount+1)
 
 
 #    def select(self):
@@ -210,7 +212,7 @@ class Evolve():
                 raise ValueError("Population not drawn!")
     
     def evolve(self):
-        while self.genCount<10:
+        while True:
             self.crossover(np.random.randint(1,max(2,len(self.pops))))
             self.mutate()
             self.select()
