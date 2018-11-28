@@ -1,0 +1,82 @@
+##import pygame
+from PIL import Image, ImageDraw
+
+#some standard colors     
+WHITE=(255,255,255)
+BLACK=(0,0,0)
+RED=(255,0,0)
+GREEN=(0,255,0)
+BLUE=(0,0,255)
+
+class drawImage:
+    def __init__(self,pop,size):
+        self.pop=pop
+        self.size=size
+        self.image=self.generateImage()
+
+    def generateImage(self):
+        im = Image.new('RGB', self.size, WHITE)
+        draw = ImageDraw.Draw(im, 'RGBA')
+        for chromo in self.pop:
+            draw.ellipse([chromo.pos1,chromo.pos2],
+                         fill=chromo.RGBA, outline=chromo.RGBA)
+        del draw
+        return im
+
+    def saveImage(self, gen):
+        self.image.save("gen# " +str(gen)+'.png')
+
+
+
+##class Screen():
+##    def __init__(self, size):
+##        self.size=size
+##        self.screen=None
+##        self.surface=None
+##        
+##    def setSurface(self):
+##        #surface for transparency
+##        self.surface=pygame.Surface(self.size,pygame.SRCALPHA)
+##        
+##    def setScreen(self):
+##        #initializing display
+##        pygame.display.init()
+##        self.setSurface()
+##        if pygame.display.get_init():
+##            #setting up the screen
+##            self.screen=pygame.display.set_mode(list(self.size))
+##            self.screen.fill(WHITE)     #white background
+##            self.screen.blit(self.surface,(0,0))    #blitting the transparent surface
+##            pygame.display.update() #updating screen
+##
+##    def DrawPop(self, pop, gen):
+####        if not pygame.display.init():
+####            return False
+##        #Loop until the user clicks the close button.
+##        done = False
+####        clock = pygame.time.Clock()
+##        i=0
+##        while i<len(pop):
+##     
+##            # This limits the while loop to a max of 10 times per second.
+##            # Leave this out and we will use all CPU we can.
+####            clock.tick(10)
+##            for event in pygame.event.get(): # User did something
+##                if event.type == pygame.QUIT: # If user clicked close
+##                    done=True # Flag that we are done so we exit this loop
+##            #chromosomes in population are drawn
+##            if i<len(pop):
+##                chromo=pop[i]
+##                pygame.draw.circle(self.surface,chromo.RGBA,chromo.pos,chromo.rad,0)
+##            i+=1
+##            #elif i==len(pop):
+##                #screen is updated once all the population has been drawn on the surface
+##        self.screen.blit(self.surface,(0,0))
+##        pygame.display.update()
+##            
+##        #image is saved only when all of the population has been drawn       
+##        if i>=len(pop):
+##            imgName="gen#"+str(gen)+".jpg"
+##            pygame.image.save(self.screen, imgName)
+##        pygame.display.quit()
+##        return True

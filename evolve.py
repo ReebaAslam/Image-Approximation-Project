@@ -2,28 +2,28 @@ from PIL import Image, ImageChops
 import numpy as np
 import random
 import functools, operator
-from screen import Screen
+from DrawImage import drawImage
 
 # some standard colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+WHITE = (255, 255, 255,255)
+BLACK = (0, 0, 0,255)
+RED = (255, 0, 0,255)
+GREEN = (0, 255, 0,255)
+BLUE = (0, 0, 255,255)
 
 MUTATE_CHANCE = 0.1
 
 
 # A chromosome object is the basic unit of the population made up of genes
 class Chromosome:
-    def __init__(self, color=BLACK, pos=(0, 0), alpha=255, rad=0):
+    def __init__(self, color=BLACK, pos1=(0, 0), pos2=(1,1)):
         # genes
-        self.RGBA = tuple(list(color) + [alpha])
-        self.pos = pos
-        self.rad = rad
+        self.RGBA = color
+        self.pos1 = pos1
+        self.pos2 = pos2
 
     def __str__(self):
-        lst = [self.RGBA, self.pos, self.rad]
+        lst = [self.RGBA, self.pos1, self.pos2]
         return lst.__str__()
 
     def gene_mutate(self, size):
@@ -47,16 +47,17 @@ class Chromosome:
                 # mutate position
                 x = max(0, random.randint(int(self.pos[0] * (1 - mutation_size)), int(self.pos[0] * (1 + mutation_size))))
                 y = max(0, random.randint(int(self.pos[1] * (1 - mutation_size)), int(self.pos[1] * (1 + mutation_size))))
-                self.pos = (x, y)
+                self.pos1 = (x, y)
             else:
-                self.rad = max(1,
+                length = max(1,
                                random.randint(int(self.rad * (1 - mutation_size)), int(self.rad * (1 + mutation_size))))
 
-
+                self.pos2=(self.pos1[0]+length,self.pos1[1]+length)
 class Population:
-    def __init__(self, pop, fitVal):
-        self.pop = pop
+    def __init__(self, img, fitVal):
+        self.image = img
         self.fitVal = fitVal
+        self.pop=img.pop
 
     def __str__(self):
         # lst = [self.pop, self.gen, self.fitVal]
@@ -68,12 +69,12 @@ class Evolve:
     def __init__(self, filename, n):
         # the image you want to approximate
         self.imgName = filename
-        self.img = Image.open(filename)
+        self.img = Image.open(filename).convert('RGB')
         # stores size of the image
         width, height = self.img.size
         self.size = (width, height)
-        # pygame screen
-        self.Screen = Screen(self.size)
+##        # pygame screen
+##        self.Screen = Screen(self.size)
         # the generation count
         self.genCount = 0
         # population of the current generation, would be a list of chromosomes
@@ -84,8 +85,8 @@ class Evolve:
         self.nCircle = n
         # offsprings
         self.offsprings = []
-
         self.fit = []
+
 
     def addFitter(self, lst, p):
         """ makes sure that the fitter population is always at 0th index
@@ -103,50 +104,57 @@ class Evolve:
 
         if len(self.pops) >= 2:  # function should not work if there is no screen
             return False
-            # #computing radius for the circles
-            # ScreenArea=self.size[0]*self.size[1]
-            # CircleArea=ScreenArea/self.nCircle
-            # radius=int(np.sqrt(CircleArea/np.pi))
-            # #flags for colors
+##        #computing radius for the circles
+##        ScreenArea=self.size[0]*self.size[1]
+##        CircleArea=ScreenArea/self.nCircle
+##        radius=int(np.sqrt(CircleArea/np.pi))
+##        #flags for colors
         population = []
         for k in range(2):
             p = []
             for i in range(self.nCircle):
                 # randomly choosing color for each circle/chromosome
-                ##                color = random.randint(black, white)
+##                color = random.randint(black, white)
                 # default color is black
-                ##                rgb = BLACK
-                ##                if color == white:
-                ##                    rgb = WHITE
+##                rgb = BLACK
+##                if color == white:
+##                    rgb = WHITE
                 # random selection of genes
-                alpha = random.randint(0, 255)
                 posX = random.randint(0, self.size[0])
                 posY = random.randint(0, self.size[1])
-                radius = random.randint(0, self.size[0] // 8)
-                rgb = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                length = random.randint(0, self.size[0] // 3)
+                rgba=(random.randint(0, 255),random.randint(0, 255),random.randint(0, 255),random.randint(0, 255))
                 # creating a new chromosome
-                newChromo = Chromosome(rgb, (posX, posY), alpha, radius)
+                newChromo = Chromosome(rgba, (posX, posY),(posX+length,posY+length))
                 p.append(newChromo)
             population.append(p)
         for pop in population:
-            self.Screen.setScreen()
-            if self.Screen.DrawPop(pop, self.genCount):
-                fitVal = self.fitness()
-                if fitVal == -1:
-                    raise ValueError("No final image exists!")
-                else:
-                    tempPop = Population(pop, fitVal)
-                    self.addFitter(self.pops, tempPop)
+            drawPop=drawImage(pop,self.size)
+            image=drawPop.generateImage()
+            fitVal=self.fitness(image)
+            if fitVal == -1:
+                raise ValueError("No final image exists!")
             else:
-                raise ValueError("Population not drawn!")
+                tempPop = Population(drawPop, fitVal)
+                self.addFitter(self.pops, tempPop)
+##            if self.Screen.DrawPop(pop, self.genCount):
+##                fitVal = self.fitness()
+##                if fitVal == -1:
+##                    raise ValueError("No final image exists!")
+##                else:
+##                    tempPop = Population(pop, fitVal)
+##                    self.addFitter(self.pops, tempPop)
+##            else:
+##                raise ValueError("Population not drawn!")
         self.fit = (self.pops[0].fitVal, self.pops[1].fitVal)
+        self.pops[0].image.saveImage(0)
         return True
 
-    def fitness(self):
+    def fitness(self,img):
         """calculates fitness of a population"""
 
         im1 = self.img
-        im2 = Image.open("gen#" + str(self.genCount) + ".jpg")
+        im2 = img
         ##        im2=self.genImg
         # if any of the images do not exis, the function doesn't work
         if im1 == None or im2 == None:
@@ -173,14 +181,17 @@ class Evolve:
         self.pops = selectedPop
         self.offsprings = []
         self.fit = (self.pops[0].fitVal, self.pops[1].fitVal)
-        self.Screen.setScreen()
-        self.Screen.DrawPop(self.pops[0].pop, self.genCount + 1)
+##        self.Screen.setScreen()
+##        self.Screen.DrawPop(self.pops[0].pop, self.genCount + 1)
+        if self.genCount in range(0,10,50) or self.genCount%50==0:
+            image=self.pops[0].image
+            image.saveImage(self.genCount+1)
 
     #    def select(self):
     #        """ single parent vs daughter"""
     #        self.pops.pop()     #removes the less fitter population
 
-    def crossover(self, r):
+     def crossover(self, r):
         """ creates new offsprings using crossover at point r"""
 
         crossover_point = min(self.nCircle - 1, int((self.nCircle) / r))
@@ -207,16 +218,14 @@ class Evolve:
         children = self.offsprings[:]
         self.offsprings = []
         for pop in children:
-            self.Screen.setScreen()
-            if self.Screen.DrawPop(pop, self.genCount + 1):
-                fitVal = self.fitness()
-                if fitVal == -1:
-                    raise ValueError("No final image exists!")
-                else:
-                    tempPop = Population(pop, fitVal)
-                    self.addFitter(self.offsprings, tempPop)
+            drawPop=drawImage(pop,self.size)
+            image=drawPop.generateImage()
+            fitVal=self.fitness(image)
+            if fitVal == -1:
+                raise ValueError("No final image exists!")
             else:
-                raise ValueError("Population not drawn!")
+                tempPop = Population(drawPop, fitVal)
+                self.addFitter(self.offsprings, tempPop)
 
     def evolve(self):
         while True:
