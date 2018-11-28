@@ -221,7 +221,7 @@ class Evolve:
             print('gen #: {} fitness: {}'.format(str(self.genCount), str(self.fit)))
 
 
-test = Evolve('test2.jpg', 100)
+test = Evolve('test.jpg', 100)
 test.generatePopulation()
 test.evolve()
 ##test.DrawPop()
