@@ -102,23 +102,22 @@ class Evolve:
             # CircleArea=ScreenArea/self.nCircle
             # radius=int(np.sqrt(CircleArea/np.pi))
             # #flags for colors
-        black, white = 0, 1
-
         population = []
         for k in range(2):
             p = []
             for i in range(self.nCircle):
                 # randomly choosing color for each circle/chromosome
-                color = random.randint(black, white)
+##                color = random.randint(black, white)
                 # default color is black
-                rgb = BLACK
-                if color == white:
-                    rgb = WHITE
+##                rgb = BLACK
+##                if color == white:
+##                    rgb = WHITE
                 # random selection of genes
                 alpha = random.randint(0, 255)
                 posX = random.randint(0, self.size[0])
                 posY = random.randint(0, self.size[1])
                 radius = random.randint(0, self.size[0] // 8)
+                rgb=(random.randint(0, 255),random.randint(0, 255),random.randint(0, 255))
                 # creating a new chromosome
                 newChromo = Chromosome(rgb, (posX, posY), alpha, radius)
                 p.append(newChromo)
