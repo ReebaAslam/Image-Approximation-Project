@@ -45,13 +45,15 @@ class Chromosome:
                 self.RGBA = (color_r, color_g, color_b, alpha)
             elif prop == 1:
                 # mutate position
-                x = max(0, random.randint(int(self.pos[0] * (1 - mutation_size)), int(self.pos[0] * (1 + mutation_size))))
-                y = max(0, random.randint(int(self.pos[1] * (1 - mutation_size)), int(self.pos[1] * (1 + mutation_size))))
+                x = max(0, random.randint(int(self.pos1[0] * (1 - mutation_size)), int(self.pos1[0] * (1 + mutation_size))))
+                y = max(0, random.randint(int(self.pos1[1] * (1 - mutation_size)), int(self.pos1[1] * (1 + mutation_size))))
                 self.pos1 = (x, y)
             else:
-                length = max(1,
-                               random.randint(int(self.rad * (1 - mutation_size)), int(self.rad * (1 + mutation_size))))
-
+                diag=self.pos2[0]-self.pos1[0]
+                length= max(1,random.randint(int(diag*(1-mutation_size)),int(diag*(1+mutation_size))))
+##                self.rad = max(1,
+##                               random.randint(int(self.rad * (1 - mutation_size)), int(self.rad * (1 + mutation_size))))
+                
                 self.pos2=(self.pos1[0]+length,self.pos1[1]+length)
 class Population:
     def __init__(self, img, fitVal):
@@ -183,7 +185,7 @@ class Evolve:
         self.fit = (self.pops[0].fitVal, self.pops[1].fitVal)
 ##        self.Screen.setScreen()
 ##        self.Screen.DrawPop(self.pops[0].pop, self.genCount + 1)
-        if self.genCount in range(0,10,50) or self.genCount%50==0:
+        if self.genCount%50==0:
             image=self.pops[0].image
             image.saveImage(self.genCount+1)
 
@@ -191,16 +193,15 @@ class Evolve:
     #        """ single parent vs daughter"""
     #        self.pops.pop()     #removes the less fitter population
 
-     def crossover(self, r):
-        """ creates new offsprings using crossover at point r"""
-
-        crossover_point = min(self.nCircle - 1, int((self.nCircle) / r))
-        # crossover_point=(self.nCircle)/r
-        child1 = self.pops[0].pop[:crossover_point] + self.pops[1].pop[crossover_point:]
-        child2 = self.pops[1].pop[:crossover_point] + self.pops[0].pop[crossover_point:]
-        # child1=self.pops[0][:crossover_point]+self.pops[1][crossover_point:]
-        # child2=self.pops[1][:crossover_point]+self.pops[0][crossover_point:]
-        self.offsprings = [child1, child2]
+    def crossover(self, r):
+     """ creates new offsprings using crossover at point r"""
+     crossover_point = min(self.nCircle - 1, int((self.nCircle) / r))
+     # crossover_point=(self.nCircle)/r
+     child1 = self.pops[0].pop[:crossover_point] + self.pops[1].pop[crossover_point:]
+     child2 = self.pops[1].pop[:crossover_point] + self.pops[0].pop[crossover_point:]
+     # child1=self.pops[0][:crossover_point]+self.pops[1][crossover_point:]
+     # child2=self.pops[1][:crossover_point]+self.pops[0][crossover_point:]
+     self.offsprings = [child1, child2]
 
     def mutate(self):
         """ after mutation,
