@@ -11,7 +11,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-MUTATE_CHANCE = 0.5
+MUTATE_CHANCE = 0.1
 
 
 # A chromosome object is the basic unit of the population made up of genes
@@ -169,8 +169,7 @@ class Evolve:
         self.offsprings = []
         self.fit = (self.pops[0].fitVal, self.pops[1].fitVal)
         self.Screen.setScreen()
-        if self.genCount % 10 == 0:
-            self.Screen.DrawPop(self.pops[0].pop, self.genCount + 1)
+        self.Screen.DrawPop(self.pops[0].pop, self.genCount + 1)
 
     #    def select(self):
     #        """ single parent vs daughter"""
@@ -223,7 +222,7 @@ class Evolve:
             print('gen #: ' + str(self.genCount) + 'fitness: ' + str(self.fit))
 
 
-test = Evolve('test.jpg', 100)
+test = Evolve('test2.jpg', 100)
 test.generatePopulation()
 test.evolve()
 ##test.DrawPop()
