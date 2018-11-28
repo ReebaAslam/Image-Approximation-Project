@@ -34,9 +34,9 @@ class Chromosome:
             prop = np.random.randint(0, 3)
             if prop == 0:
                 alpha = np.random.randint(0, 255)
-                color_r = self.RGBA[0]
-                color_g = self.RGBA[1]
-                color_b = self.RGBA[2]
+                color_r = np.random.randint(0, 255)
+                color_g = np.random.randint(0, 255)
+                color_b = np.random.randint(0, 255)
                 self.RGBA = (color_r, color_g, color_b, alpha)
             elif prop == 1:
                 # mutate position
@@ -218,7 +218,7 @@ class Evolve:
             self.mutate()
             self.select()
             self.genCount += 1
-            print('gen #: ' + str(self.genCount) + 'fitness: ' + str(self.fit))
+            print('gen #: {} fitness: {}'.format(str(self.genCount), str(self.fit)))
 
 
 test = Evolve('test2.jpg', 100)
