@@ -31,20 +31,26 @@ class Chromosome:
         if MUTATE_CHANCE >= np.random.random():
             mutate = True
         if mutate:
+            mutation_size = max(1, int(round(random.gauss(15, 4)))) / 100
             prop = np.random.randint(0, 3)
             if prop == 0:
-                alpha = np.random.randint(0, 255)
-                color_r = np.random.randint(0, 255)
-                color_g = np.random.randint(0, 255)
-                color_b = np.random.randint(0, 255)
+                color_r = min(max(0, random.randint(int(self.RGBA[0] * (1 - mutation_size)),
+                                              int(self.RGBA[0] * (1 + mutation_size)))), 255)
+                color_g = min(max(0, random.randint(int(self.RGBA[1] * (1 - mutation_size)),
+                                              int(self.RGBA[1] * (1 + mutation_size)))), 255)
+                color_b = min(max(0, random.randint(int(self.RGBA[2] * (1 - mutation_size)),
+                                              int(self.RGBA[2] * (1 + mutation_size)))), 255)
+                alpha = min(max(0, random.randint(int(self.RGBA[3] * (1 - mutation_size)),
+                                              int(self.RGBA[3] * (1 + mutation_size)))), 255)
                 self.RGBA = (color_r, color_g, color_b, alpha)
             elif prop == 1:
                 # mutate position
-                x = np.random.randint(0, size[0])
-                y = np.random.randint(0, size[1])
+                x = max(0, random.randint(int(self.pos[0] * (1 - mutation_size)), int(self.pos[0] * (1 + mutation_size))))
+                y = max(0, random.randint(int(self.pos[1] * (1 - mutation_size)), int(self.pos[1] * (1 + mutation_size))))
                 self.pos = (x, y)
             else:
-                self.rad = random.randint(0, size[0] // 8)
+                self.rad = max(1,
+                               random.randint(int(self.rad * (1 - mutation_size)), int(self.rad * (1 + mutation_size))))
 
 
 class Population:
@@ -107,17 +113,17 @@ class Evolve:
             p = []
             for i in range(self.nCircle):
                 # randomly choosing color for each circle/chromosome
-##                color = random.randint(black, white)
+                ##                color = random.randint(black, white)
                 # default color is black
-##                rgb = BLACK
-##                if color == white:
-##                    rgb = WHITE
+                ##                rgb = BLACK
+                ##                if color == white:
+                ##                    rgb = WHITE
                 # random selection of genes
                 alpha = random.randint(0, 255)
                 posX = random.randint(0, self.size[0])
                 posY = random.randint(0, self.size[1])
                 radius = random.randint(0, self.size[0] // 8)
-                rgb=(random.randint(0, 255),random.randint(0, 255),random.randint(0, 255))
+                rgb = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
                 # creating a new chromosome
                 newChromo = Chromosome(rgb, (posX, posY), alpha, radius)
                 p.append(newChromo)
