@@ -16,14 +16,14 @@ MUTATE_CHANCE = 0.1
 
 # A chromosome object is the basic unit of the population made up of genes
 class Chromosome:
-    def __init__(self, color=BLACK, pos1=(0, 0), pos2=(1,1)):
+    def __init__(self,rad,pos=(0,0),color=BLACK):
         # genes
         self.RGBA = color
-        self.pos1 = pos1
-        self.pos2 = pos2
+        self.pos = pos
+        self.rad=rad
 
     def __str__(self):
-        lst = [self.RGBA, self.pos1, self.pos2]
+        lst = [self.RGBA, self.pos1, self.rad]
         return lst.__str__()
 
     def gene_mutate(self, size):
@@ -37,24 +37,22 @@ class Chromosome:
                 color_r = min(max(0, random.randint(int(self.RGBA[0] * (1 - mutation_size)),
                                               int(self.RGBA[0] * (1 + mutation_size)))), 255)
                 color_g = min(max(0, random.randint(int(self.RGBA[1] * (1 - mutation_size)),
-                                              int(self.RGBA[1] * (1 + mutation_size)))), 255)
+                                          int(self.RGBA[1] * (1 + mutation_size)))), 255)
                 color_b = min(max(0, random.randint(int(self.RGBA[2] * (1 - mutation_size)),
-                                              int(self.RGBA[2] * (1 + mutation_size)))), 255)
+                                          int(self.RGBA[2] * (1 + mutation_size)))), 255)
                 alpha = min(max(0, random.randint(int(self.RGBA[3] * (1 - mutation_size)),
-                                              int(self.RGBA[3] * (1 + mutation_size)))), 255)
+                                          int(self.RGBA[3] * (1 + mutation_size)))), 255)
+
                 self.RGBA = (color_r, color_g, color_b, alpha)
             elif prop == 1:
                 # mutate position
-                x = max(0, random.randint(int(self.pos1[0] * (1 - mutation_size)), int(self.pos1[0] * (1 + mutation_size))))
-                y = max(0, random.randint(int(self.pos1[1] * (1 - mutation_size)), int(self.pos1[1] * (1 + mutation_size))))
-                self.pos1 = (x, y)
+                x = max(0, random.randint(int(self.pos[0] * (1 - mutation_size)), int(self.pos[0] * (1 + mutation_size))))
+                y = max(0, random.randint(int(self.pos[1] * (1 - mutation_size)), int(self.pos[1] * (1 + mutation_size))))
+                self.pos = (x, y)
             else:
-                diag=self.pos2[0]-self.pos1[0]
-                length= max(1,random.randint(int(diag*(1-mutation_size)),int(diag*(1+mutation_size))))
-##                self.rad = max(1,
-##                               random.randint(int(self.rad * (1 - mutation_size)), int(self.rad * (1 + mutation_size))))
-                
-                self.pos2=(self.pos1[0]+length,self.pos1[1]+length)
+                self.rad = max(self.rad,
+                               random.randint(int(self.rad * (1 - mutation_size)), int(self.rad * (1 + mutation_size))))
+
 class Population:
     def __init__(self, img, fitVal):
         self.image = img
@@ -75,8 +73,6 @@ class Evolve:
         # stores size of the image
         width, height = self.img.size
         self.size = (width, height)
-##        # pygame screen
-##        self.Screen = Screen(self.size)
         # the generation count
         self.genCount = 0
         # population of the current generation, would be a list of chromosomes
@@ -106,28 +102,17 @@ class Evolve:
 
         if len(self.pops) >= 2:  # function should not work if there is no screen
             return False
-##        #computing radius for the circles
-##        ScreenArea=self.size[0]*self.size[1]
-##        CircleArea=ScreenArea/self.nCircle
-##        radius=int(np.sqrt(CircleArea/np.pi))
-##        #flags for colors
         population = []
         for k in range(2):
             p = []
             for i in range(self.nCircle):
-                # randomly choosing color for each circle/chromosome
-##                color = random.randint(black, white)
-                # default color is black
-##                rgb = BLACK
-##                if color == white:
-##                    rgb = WHITE
                 # random selection of genes
                 posX = random.randint(0, self.size[0])
                 posY = random.randint(0, self.size[1])
-                length = random.randint(0, self.size[0] // 3)
+                rad = random.randint(0, self.size[0] // 5)
                 rgba=(random.randint(0, 255),random.randint(0, 255),random.randint(0, 255),random.randint(0, 255))
                 # creating a new chromosome
-                newChromo = Chromosome(rgba, (posX, posY),(posX+length,posY+length))
+                newChromo = Chromosome( rad ,(posX,posY),rgba)
                 p.append(newChromo)
             population.append(p)
         for pop in population:
@@ -139,15 +124,6 @@ class Evolve:
             else:
                 tempPop = Population(drawPop, fitVal)
                 self.addFitter(self.pops, tempPop)
-##            if self.Screen.DrawPop(pop, self.genCount):
-##                fitVal = self.fitness()
-##                if fitVal == -1:
-##                    raise ValueError("No final image exists!")
-##                else:
-##                    tempPop = Population(pop, fitVal)
-##                    self.addFitter(self.pops, tempPop)
-##            else:
-##                raise ValueError("Population not drawn!")
         self.fit = (self.pops[0].fitVal, self.pops[1].fitVal)
         self.pops[0].image.saveImage(0)
         return True
@@ -164,30 +140,29 @@ class Evolve:
         # computing the absolute pixel difference in both images and storing its ,histogram
         hist = ImageChops.difference(im1, im2).histogram()
         # calculating rms
-        meanSquare = map(lambda h, i: h * (i ** 2), hist, range(len(hist)))
-        rms = np.sqrt(functools.reduce(operator.add, meanSquare) / (float(self.size[0]) * self.size[1]))
+        sqr = (val*(i**2) for i, val in enumerate(hist))
+        sum_of_squares = sum(sqr)
+        rms = np.sqrt(sum_of_squares/float(im1.size[0] * im1.size[1]))
         return rms
+##        i1 = np.array(im1,np.int16)
+##        i2 = np.array(im2,np.int16)
+##        dif = np.sum(np.abs(i1-i2))
+##        return (dif / 255.0 * 100) / i1.size
+    
 
     def select(self):
         """ selects the fittest populations"""
 
         i = j = 0
-        selectedPop = []
-        while len(selectedPop) < 2:
-            if self.pops[i].fitVal < self.offsprings[j].fitVal:
-                self.addFitter(selectedPop, self.pops[i])
-                i += 1
-            else:
-                self.addFitter(selectedPop, self.offsprings[j])
-                j += 1
-        self.pops = selectedPop
+        selectedPop = self.pops+self.offsprings
+        winners=sorted(selectedPop, key=lambda x: x.fitVal)
+        self.pops = winners[0:2]
         self.offsprings = []
         self.fit = (self.pops[0].fitVal, self.pops[1].fitVal)
-##        self.Screen.setScreen()
-##        self.Screen.DrawPop(self.pops[0].pop, self.genCount + 1)
-        if self.genCount%50==0:
+        if self.genCount in [0,100,500] or self.genCount%1000==0:
             image=self.pops[0].image
-            image.saveImage(self.genCount+1)
+            image.saveImage(self.genCount)
+            print("image # " +str(self.genCount))
 
     #    def select(self):
     #        """ single parent vs daughter"""
@@ -195,12 +170,13 @@ class Evolve:
 
     def crossover(self, r):
      """ creates new offsprings using crossover at point r"""
-     crossover_point = min(self.nCircle - 1, int((self.nCircle) / r))
+##     crossover_point = min(self.nCircle - 1, int((self.nCircle) / r))
+     if r<0.5:
+         r=1-r
+     crossover_point=int(self.nCircle*r)
      # crossover_point=(self.nCircle)/r
      child1 = self.pops[0].pop[:crossover_point] + self.pops[1].pop[crossover_point:]
      child2 = self.pops[1].pop[:crossover_point] + self.pops[0].pop[crossover_point:]
-     # child1=self.pops[0][:crossover_point]+self.pops[1][crossover_point:]
-     # child2=self.pops[1][:crossover_point]+self.pops[0][crossover_point:]
      self.offsprings = [child1, child2]
 
     def mutate(self):
@@ -214,7 +190,8 @@ class Evolve:
         for p in self.offsprings:
             # each offspring has a random choice of mutating
             if MUTATE_CHANCE >= np.random.random():
-                for g in p:
+                sample=random.sample(p,int(self.nCircle*0.5))
+                for g in sample:
                     g.gene_mutate(self.size)
         children = self.offsprings[:]
         self.offsprings = []
@@ -230,14 +207,15 @@ class Evolve:
 
     def evolve(self):
         while True:
-            self.crossover(np.random.randint(1, max(2, len(self.pops))))
+            self.crossover(random.randrange(0,1))
+##            self.crossover(0.7)
             self.mutate()
-            self.select()
             self.genCount += 1
+            self.select()
             print('gen #: {} fitness: {}'.format(str(self.genCount), str(self.fit)))
 
 
-test = Evolve('test.jpg', 100)
+test = Evolve('download.png', 50)
 test.generatePopulation()
 test.evolve()
 ##test.DrawPop()
