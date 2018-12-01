@@ -11,8 +11,8 @@ RED = (255, 0, 0,255)
 GREEN = (0, 255, 0,255)
 BLUE = (0, 0, 255,255)
 
-MUTATE_CHANCE = 0.1
-POPULATION_SIZE=2
+MUTATE_CHANCE = 0.05
+POPULATION_SIZE=25
 
 
 # A chromosome object is the basic unit of the population made up of genes
@@ -262,7 +262,7 @@ class Evolve:
                 print('gen #: {} fitness: {}, {}'.format(str(self.genCount), str(self.maxFitness), str(self.avgFitness)))
 ##            MUTATE_CHANCE*=0.8
 
-test = Evolve('firefox.png', 50)
+test = Evolve('firefox.png', 100)
 test.generatePopulation()
 test.evolve()
 ##test.DrawPop()
