@@ -12,7 +12,7 @@ GREEN = (0, 255, 0,255)
 BLUE = (0, 0, 255,255)
 
 MUTATE_CHANCE = 0.1
-POPULATION_SIZE=8
+POPULATION_SIZE=2
 
 
 # A chromosome object is the basic unit of the population made up of genes
@@ -188,10 +188,15 @@ class Evolve:
          self.offsprings.append(child2)
          childCount+=2
 
-    def crossover2(self, r):
+    def crossover2(self, r1,r2):
      """ creates new offsprings using crossover at point r"""
 ##     crossover_point = min(self.nCircle - 1, int((self.nCircle) / r))
-     crossover_point=int(self.size[0]*r)
+     if r2<r1:
+         crossover_point1=int(self.size[0]*r2)
+         crossover_point2=int(self.size[0]*r1)
+     else:
+         crossover_point1=int(self.size[0]*r1)
+         crossover_point2=int(self.size[0]*r2)
      # crossover_point=(self.nCircle)/r
      parents=self.pops[:]
      childCount=0
@@ -202,10 +207,15 @@ class Evolve:
          mother=random.choice(parents)
          parents.remove(mother)
 ##         mother.pop=sorted(mother.pop,key=lambda x: x.pos[1])
-         child1=[chromo for chromo in father.pop if chromo.pos[0]<crossover_point ]+[
-                 chromo for chromo in mother.pop if chromo.pos[0]>=crossover_point ]
-         child2=[chromo for chromo in mother.pop if chromo.pos[0]<crossover_point]+[
-                 chromo for chromo in father.pop if chromo.pos[0]>=crossover_point ]
+         child1=[chromo for chromo in father.pop if chromo.pos[0]<crossover_point1 ]+[
+                chromo for chromo in mother.pop if chromo.pos[0]>=crossover_point1 and chromo.pos[0]<=crossover_point2 ]+[
+                chromo for chromo in father.pop if chromo.pos[0]>crossover_point2 ]
+
+
+
+         child2=[chromo for chromo in mother.pop if chromo.pos[0]<crossover_point1 ]+[
+                chromo for chromo in father.pop if chromo.pos[0]>=crossover_point1 and chromo.pos[0]<=crossover_point2 ]+[
+                chromo for chromo in mother.pop if chromo.pos[0]>crossover_point2 ]
 ##         child1=father.pop[:crossover_point] + mother.pop[crossover_point:]
 ##         child2 = mother.pop[:crossover_point] + father.pop[crossover_point:]
          self.offsprings.append(child1)
@@ -243,7 +253,7 @@ class Evolve:
         print('gen #: {} fitness: {}, {}'.format(str(self.genCount), str(self.maxFitness), str(self.avgFitness)))
         while True:
 ##            for i in range(500):
-            self.crossover2(random.randrange(0,1))
+            self.crossover2(random.randrange(0,1),random.randrange(0,1))
 ##            self.crossover(0.7)
             self.mutate()
             self.genCount += 1
