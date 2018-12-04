@@ -11,8 +11,8 @@ RED = (255, 0, 0,255)
 GREEN = (0, 255, 0,255)
 BLUE = (0, 0, 255,255)
 
-MUTATE_CHANCE = 0.05
-POPULATION_SIZE=25
+MUTATE_CHANCE = 0.1
+POPULATION_SIZE=10
 
 
 # A chromosome object is the basic unit of the population made up of genes
@@ -138,7 +138,11 @@ class Evolve:
         if im1 == None or im2 == None:
             return -1
         # computing the absolute pixel difference in both images and storing its ,histogram
-##        hist = ImageChops.difference(im1, im2).histogram()
+        hist = ImageChops.difference(im1, im2).histogram()
+        pix=np.sqrt(functools.reduce(operator.add,
+                         list(map(lambda h, i: h*(i**2),
+                             hist, list(range(256))*3))) /
+                            (float(self.size[0]) * self.size[1]))
 ##        # calculating rms
 ##        sqr = (val*(i**2) for i, val in enumerate(hist))
 ##        sum_of_squares = sum(sqr)
@@ -147,7 +151,8 @@ class Evolve:
         i1 = np.array(im1,np.int16)
         i2 = np.array(im2,np.int16)
         dif = np.sum(np.abs(i1-i2))
-        return (dif / 255.0 * 100) / i1.size
+        pos=(dif / 255.0 * 100) / i1.size
+        return pix+pos
     
 
     def select(self):
@@ -165,7 +170,6 @@ class Evolve:
         if self.genCount in [0,100,500] or self.genCount%1000==0:
             image=self.pops[0].image
             image.saveImage(self.genCount)
-            print("image # " +str(self.genCount))
 
 
     def crossover1(self, r):
@@ -207,19 +211,13 @@ class Evolve:
          mother=random.choice(parents)
          parents.remove(mother)
 ##         mother.pop=sorted(mother.pop,key=lambda x: x.pos[1])
-         child1=[chromo for chromo in father.pop if chromo.pos[0]<crossover_point1 ]+[
-                chromo for chromo in mother.pop if chromo.pos[0]>=crossover_point1 and chromo.pos[0]<=crossover_point2 ]+[
-                chromo for chromo in father.pop if chromo.pos[0]>crossover_point2 ]
+         child1=[chromo for chromo in father.pop if chromo.pos[0]<crossover_point1 or chromo.pos[0]>crossover_point2 ]+[
+                chromo for chromo in mother.pop if chromo.pos[0]>=crossover_point1 and chromo.pos[0]<=crossover_point2 ]
 
-
-
-         child2=[chromo for chromo in mother.pop if chromo.pos[0]<crossover_point1 ]+[
-                chromo for chromo in father.pop if chromo.pos[0]>=crossover_point1 and chromo.pos[0]<=crossover_point2 ]+[
-                chromo for chromo in mother.pop if chromo.pos[0]>crossover_point2 ]
-##         child1=father.pop[:crossover_point] + mother.pop[crossover_point:]
-##         child2 = mother.pop[:crossover_point] + father.pop[crossover_point:]
-         self.offsprings.append(child1)
-         self.offsprings.append(child2)
+         child2=[chromo for chromo in mother.pop if chromo.pos[0]<crossover_point1 or chromo.pos[0]>crossover_point2 ]+[
+                chromo for chromo in father.pop if chromo.pos[0]>=crossover_point1 and chromo.pos[0]<=crossover_point2 ]
+         self.offsprings.append(child1[:self.nCircle])
+         self.offsprings.append(child2[:self.nCircle])
          childCount+=2
 
     def mutate(self):
@@ -253,16 +251,16 @@ class Evolve:
         print('gen #: {} fitness: {}, {}'.format(str(self.genCount), str(self.maxFitness), str(self.avgFitness)))
         while True:
 ##            for i in range(500):
-            self.crossover2(random.randrange(0,1),random.randrange(0,1))
-##            self.crossover(0.7)
+            self.crossover2(random.uniform(0,1),random.uniform(0,1))
+##            self.crossover1(random.uniform(0,1))
             self.mutate()
             self.genCount += 1
             self.select()
-            if self.genCount%50==0:
+            if self.genCount%20==0:
                 print('gen #: {} fitness: {}, {}'.format(str(self.genCount), str(self.maxFitness), str(self.avgFitness)))
 ##            MUTATE_CHANCE*=0.8
 
-test = Evolve('firefox.png', 100)
+test = Evolve('firefox.png', 50)
 test.generatePopulation()
 test.evolve()
 ##test.DrawPop()
