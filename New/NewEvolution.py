@@ -4,9 +4,9 @@ from DrawImage import DrawImage
 from Gene import Gene
 import random
 
-image=Image.open('firefox.png').convert('RGB')
+image=Image.open('yellowCircle.png').convert('RGB')
 size=image.size
-mutate_rate=0.5
+mutate_rate=0.05
 POP_SIZE=5
 
 def InitialPopulation():
@@ -68,10 +68,11 @@ def evolve():
                 p2=random.choice(parents)
                 crossover(p1,p2,children)
             pop=mutate(children)
+            pop.append(fittest)
             fittest,parents=select(pop,gen)
             parents=parents[:POP_SIZE//2]
             gen+=1
-        mutate_rate*=0.8
+##        mutate_rate*=0.8
         
 def crossover(parent1,parent2,children):
     r=random.random()
