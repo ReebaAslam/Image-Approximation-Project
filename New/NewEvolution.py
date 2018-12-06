@@ -4,7 +4,8 @@ from DrawImage import DrawImage
 from Gene import Gene
 import random
 
-image=Image.open('yellowCircle.png').convert('RGB')
+
+image=Image.open('play.png').convert('RGB')
 size=image.size
 mutate_rate=0.05
 POP_SIZE=5
@@ -77,8 +78,8 @@ def evolve():
 def crossover(parent1,parent2,children):
     r=random.random()
     cp=int(size[0]*r)
-    child1=[gene for gene in parent1.genes if gene.pos[0]<=cp]+[gene for gene in parent2.genes if gene.pos[0]>cp]
-    child2=[gene for gene in parent2.genes if gene.pos[0]<=cp]+[gene for gene in parent1.genes if gene.pos[0]>cp]
+    child1=[gene for gene in parent1.genes if gene.pos1[0]<=cp]+[gene for gene in parent2.genes if gene.pos1[0]>cp]
+    child2=[gene for gene in parent2.genes if gene.pos1[0]<=cp]+[gene for gene in parent1.genes if gene.pos1[0]>cp]
     temp1=Chromosome(image,len(child1),size)
     temp1.genes=child1
     children.append(temp1)
@@ -86,4 +87,4 @@ def crossover(parent1,parent2,children):
     temp2.genes=child2
     children.append(temp2)
 
-    
+new=evolve()
