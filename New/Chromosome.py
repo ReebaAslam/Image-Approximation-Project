@@ -28,7 +28,7 @@ class Chromosome:
     def GenerateGenes(self, size):
         genes = []
         for i in range(self.nCircles):
-            if type == 'Circle':
+            if self.type == 'Circle':
                 genes.append(GeneC(size))
             else:
                 genes.append(GeneT(size))

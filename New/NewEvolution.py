@@ -4,9 +4,9 @@ from DrawImage import DrawImage
 from Gene import GeneC, GeneT
 import random
 
-image = Image.open('wolverine.jpeg').convert('RGB')
+image = Image.open('yellowCircle.png').convert('RGB')
 size = image.size
-mutate_rate = 0.1
+mutate_rate = 0.05
 POP_SIZE = 5
 
 
@@ -24,8 +24,8 @@ def InitialPopulation():
             temp = Chromosome(image, 1, size)
             chromos.append(Chromosome(image, 1, size, 'Circle'))
             temp.copy(fit)
-            # temp.genes.append(GeneC(size))
-            temp.genes.append(GeneT(size))
+            temp.genes.append(GeneC(size))
+##            temp.genes.append(GeneT(size))
             temp.nCircles += 1
             temp.image = DrawImage(temp.genes, temp.size)
             temp.fitness = temp.howFit()
@@ -40,24 +40,14 @@ def mutate(children):
     for i in range(len(children)):
         for j in range(len(children[i].genes)):
             if mutate_rate >= random.random():
-                # gene = GeneC(size)
-                gene = GeneT(size)
+                gene = GeneC(size)
+##                gene = GeneT(size)
                 children[i].genes[j] = gene
-        ##                children[i].genes[j].gene_mutate(mutate_rate)
         children[i].image = DrawImage(children[i].genes, children[i].size)
         children[i].fitness = children[i].howFit()
         pop.append(children[i])
     return pop
 
-
-##def select(pop,n):
-##    pop=sorted(pop,key=lambda x: x.fitness)
-##    fit=pop[0]
-##    if n%20==0:
-##        print("gen#"+str(n)+" - ",fit.fitness)
-##    if n in [0,100,500] or n%1000==0:
-##        fit.image.saveImage(n)
-##    return fit,pop
 
 def select(pop, n):
     pop = sorted(pop, key=lambda x: x.fitness)
@@ -151,7 +141,7 @@ def evolve(load=False):
                 parents.append(temp)
                 line = f.readline()
             fittest = parents[0]
-    for i in range(10000):
+    for i in range(100000):
         children = []
         while len(parents) > 1:
             p1 = random.choice(parents)
@@ -184,10 +174,8 @@ def crossover(parent1, parent2, children):
                                                                           gene.pos[0] > cp]
         temp1 = Chromosome(image, len(child1), size)
         temp2 = Chromosome(image, len(child2), size)
-    # temp1 = Chromosome(image, len(child1), size, 'Triangle')
     temp1.genes = child1
     children.append(temp1)
-    # temp2 = Chromosome(image, len(child2), size, 'Triangle')
     temp2.genes = child2
     children.append(temp2)
 
@@ -202,7 +190,7 @@ def crossover2(parent1, parent2, children):
     temp1.genes = child1
     children.append(temp1)
     # temp2 = Chromosome(image, len(child2), size, 'Triangle')
-    temp2 = Chromosome(image, len(child2), size)
+    temp2 = Chromosome(image, len(child2), size,'Circle')
     temp2.genes = child2
     children.append(temp2)
 
