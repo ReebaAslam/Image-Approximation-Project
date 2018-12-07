@@ -1,7 +1,8 @@
 import random
 
+WIDTH_PROP = 2
 
-WIDTH_PROP=2
+
 ##class GeneT:
 ##    def __init__(self,size):
 ##        self.pos1=(random.randint(0,size[0]),random.randint(0,size[1]))
@@ -24,18 +25,17 @@ WIDTH_PROP=2
 ##                self.RGBA=(random.randint(0,255),random.randint(0,255),random.randint(0,255),random.randint(0,255))                
 
 class GeneC:
-    def __init__(self,size=None):
+    def __init__(self, size=None):
         if size:
-            self.pos=(random.randint(0,size[0]),random.randint(0,size[1]))
-            self.rad=random.randint(5,size[0]//WIDTH_PROP)
-            self.RGBA=(random.randint(0,255),random.randint(0,255),random.randint(0,255),random.randint(0,255))
+            self.pos = (random.randint(0, size[0]), random.randint(0, size[1]))
+            self.rad = random.randint(5, size[0] // WIDTH_PROP)
+            self.RGBA = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         else:
-            self.pos=None
-            self.rad=None
-            self.RGBA=None
-        self.ImageSize= size
-        self.type='Circle'
-        
+            self.pos = None
+            self.rad = None
+            self.RGBA = None
+        self.ImageSize = size
+        self.type = 'Circle'
 
 
 class GeneT:
@@ -51,5 +51,4 @@ class GeneT:
             self.pos3 = None
             self.RGBA = None
         self.ImageSize = size
-        self.type='Triangle'
-
+        self.type = 'Triangle'
