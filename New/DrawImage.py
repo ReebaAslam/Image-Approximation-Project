@@ -17,14 +17,15 @@ class DrawImage:
     def generateImage(self):
         im = Image.new('RGB', self.size, WHITE)
         draw = ImageDraw.Draw(im, 'RGBA')
-        for chromo in self.pop:
-            #pos1=(chromo.pos[0]-chromo.rad, chromo.pos[1]-chromo.rad)
-            #pos2=(chromo.pos[0]+chromo.rad, chromo.pos[1]+chromo.rad)
-
-            ##draw.ellipse([pos1,pos2],
-             ##            fill=chromo.RGBA, outline=chromo.RGBA)
-            draw.polygon([chromo.pos1,chromo.pos2,chromo.pos3],
-                         fill=chromo.RGBA, outline=chromo.RGBA)
+        if self.pop[0].type=='Triangle':
+            for chromo in self.pop:
+                draw.polygon([chromo.pos1,chromo.pos2,chromo.pos3],fill=chromo.RGBA, outline=chromo.RGBA)
+        elif self.pop[0].type=='Circle':
+            for chromo in self.pop:
+                pos1=(chromo.pos[0]-chromo.rad, chromo.pos[1]-chromo.rad)
+                pos2=(chromo.pos[0]+chromo.rad, chromo.pos[1]+chromo.rad)
+                draw.ellipse([pos1,pos2],fill=chromo.RGBA, outline=chromo.RGBA)
+            
         del draw
         return im
 

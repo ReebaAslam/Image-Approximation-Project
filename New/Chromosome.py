@@ -1,4 +1,4 @@
-from Gene import Gene
+from Gene import GeneC, GeneT
 from PIL import Image, ImageChops
 from DrawImage import DrawImage
 import numpy as np
@@ -18,7 +18,7 @@ class Chromosome:
     def GenerateGenes(self,size):
         genes=[]
         for i in range(self.nCircles):
-            genes.append(Gene(size))
+            genes.append(GeneT(size))
         return genes
 
     def howFit(self):
