@@ -16,11 +16,11 @@ class GeneT:
         if rate<=random.random():
             change=random.randint(0,3)
             if change==0:
-                self.pos1=(random.randint(0,size[0]),random.randint(0,size[1]))
+                self.pos1=(random.randint(0,self.ImageSize[0]),random.randint(0,self.ImageSize[1]))
             elif change==1:
-                self.pos2=(random.randint(0,size[0]),random.randint(0,size[1]))
+                self.pos2=(random.randint(0,self.ImageSize[0]),random.randint(0,self.ImageSize[1]))
             elif change==2:
-                self.pos3=(random.randint(0,size[0]),random.randint(0,size[1]))
+                self.pos3=(random.randint(0,self.ImageSize[0]),random.randint(0,self.ImageSize[1]))
             else:
                 self.RGBA=(random.randint(0,255),random.randint(0,255),random.randint(0,255),random.randint(0,255))                
 
@@ -36,8 +36,8 @@ class GeneC:
         if rate<=random.random():
             change=random.randint(0,2)
             if change==0:
-                self.pos=(random.randint(0,size[0]),random.randint(0,size[1]))
+                self.pos=(random.randint(0,self.ImageSize[0]),random.randint(0,self.ImageSize[1]))
             elif change==1:
-                self.rad=random.randint(20,size[0]//WIDTH_PROP)
+                self.rad=random.randint(20,self.ImageSize[0]//WIDTH_PROP)
             else:
                 self.RGBA=(random.randint(0,255),random.randint(0,255),random.randint(0,255),random.randint(0,255))
