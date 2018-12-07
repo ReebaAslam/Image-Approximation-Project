@@ -14,7 +14,7 @@ import operator
 ##        self.image=DrawImage(self.genes,self.size)
 ##        self.fitness=self.howFit()
 class Chromosome:
-    def _init_(self, image, n, size=None):
+    def __init__(self, image, n, size=None):
         self.nCircles = n
         self.target = image
         self.size = size

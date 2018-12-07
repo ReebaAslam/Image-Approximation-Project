@@ -39,7 +39,7 @@ class GeneC:
 
 
 class GeneT:
-    def _init_(self, size=None):
+    def __init__(self, size=None):
         if size:
             self.pos1 = (random.randint(0, size[0]), random.randint(0, size[1]))
             self.pos2 = (random.randint(0, size[0]), random.randint(0, size[1]))

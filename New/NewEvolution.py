@@ -118,19 +118,17 @@ def evolve(load=False):
                 line = f.readline()
             fittest = parents[0]
     for i in range(10000):
-        for i in range(3000):
-            children=[]
-            while len(parents)>1:
-                p1=random.choice(parents)
-                parents.remove(p1)
-                p2=random.choice(parents)
-                crossover2(p1,p2,children)
-            pop=mutate(children)
-            pop.append(fittest)
-            fittest,parents=select(pop,gen)
-            parents=parents[:POP_SIZE//2]
-            gen+=1
-        mutate_rate*=0.8
+        children=[]
+        while len(parents)>1:
+            p1=random.choice(parents)
+            parents.remove(p1)
+            p2=random.choice(parents)
+            crossover2(p1,p2,children)
+        pop=mutate(children)
+        pop.append(fittest)
+        fittest,parents=select(pop,gen)
+        parents=parents[:POP_SIZE//2]
+        gen+=1
         
 def crossover(parent1,parent2,children):
     r=random.random()
