@@ -82,29 +82,27 @@ class Evolve:
         self.size = (width, height)
         # the generation count
         self.genCount = 0
-        # population of the current generation, would be a list of chromosomes
-        self.pops = []
-        # current population image
-        self.genImg = None
         # no. of circles
         self.nCircle = n
-        # offsprings
-        self.offsprings = []
+        # population of the current generation, would be a list of chromosomes
+        self.pops = self.generatePopulation()
         self.maxFitness=0
         self.avgFitness=0
+        self.howFit()
+        self.pops[0].image.saveImage(0)
+        # offsprings
+        self.offsprings = []
 
 
     def howFit(self):
         self.maxFitness=self.pops[0].fitVal
         self.avgFitness=sum(pop.fitVal for pop in self.pops)/POPULATION_SIZE
         
-    def generatePopulation(self):
+    def generatePopulation(self,n=POPULATION_SIZE):
         """generates random population"""
 
-        if len(self.pops) >= POPULATION_SIZE:  # function should not work if there is no screen
-            return False
         population = []
-        for k in range(POPULATION_SIZE):
+        for k in range(n):
             p = []
             for i in range(self.nCircle):
                 # random selection of genes
@@ -123,10 +121,8 @@ class Evolve:
             else:
                 p = Population(drawPop, fitVal)
             population.append(p)
-        self.pops=sort(population)
-        self.howFit()
-        self.pops[0].image.saveImage(0)
-        return True
+        population=sort(population)
+        return population
 
     def fitness(self,img):
         """calculates fitness of a population"""
@@ -161,7 +157,13 @@ class Evolve:
         winners=sort(selectedPop)
         self.pops = winners[0:POPULATION_SIZE//2]
         left=winners[POPULATION_SIZE//2:]
-        for i in range(POPULATION_SIZE-POPULATION_SIZE//2):
+        nLeftovers=POPULATION_SIZE-POPULATION_SIZE//2
+        if self.genCount%1000==0:
+            nLeftovers-=2
+            new=self.generatePopulation(2)
+            self.pops.append(new[0])
+            self.pops.append(new[1])
+        for i in range(nLeftovers):
             ind=random.choice(left)
             left.remove(ind)
             self.pops.append(ind)

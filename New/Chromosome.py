@@ -5,20 +5,29 @@ import numpy as np
 from functools import reduce
 import operator
 
+##class Chromosome:
+##    def __init__(self,image,n,size):
+##        self.nCircles=n
+##        self.target=image
+##        self.size=size
+##        self.genes=self.GenerateGenes(self.size)
+##        self.image=DrawImage(self.genes,self.size)
+##        self.fitness=self.howFit()
 class Chromosome:
-    def __init__(self,image,n,size):
-        self.nCircles=n
-        self.target=image
-        self.size=size
-        self.genes=self.GenerateGenes(self.size)
-        self.image=DrawImage(self.genes,self.size)
-        self.fitness=self.howFit()
+    def _init_(self, image, n, size=None):
+        self.nCircles = n
+        self.target = image
+        self.size = size
+        if size:
+            self.genes = self.GenerateGenes(self.size)
+            self.image = DrawImage(self.genes, self.size)
+            self.fitness = self.howFit()
         
 
     def GenerateGenes(self,size):
         genes=[]
         for i in range(self.nCircles):
-            genes.append(GeneT(size))
+            genes.append(GeneC(size))
         return genes
 
     def howFit(self):
