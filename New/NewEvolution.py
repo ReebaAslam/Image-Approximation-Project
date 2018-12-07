@@ -7,7 +7,7 @@ import random
 
 image=Image.open('target.jpg').convert('RGB')
 size=image.size
-mutate_rate=0.1
+mutate_rate=0.05
 POP_SIZE=5
 
 def InitialPopulation():
