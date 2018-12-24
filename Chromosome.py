@@ -35,6 +35,8 @@ class Chromosome:
         return genes
 
     def howFit(self):
+        #https://github.com/DING-PENG/image-approx
+        #https://github.com/Keilan/pyointillism
         image = self.image.generateImage()
         i1 = np.array(self.target, np.int16)
         i2 = np.array(image, np.int16)
